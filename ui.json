@@ -1,0 +1,15 @@
+{
+  "preset": "clay",
+  "accent": "#f4f4f5",
+  "scale": 1.0,
+  "radius": 1.0,
+  "opacity": 0.96,
+  "positions": {
+    "notify": "top-right",
+    "progress": "bottom",
+    "menu": "center-right",
+    "list": "top-left",
+    "textui": "center-left"
+  },
+  "radial": { "enabled": false, "key": "Z" }
+}
