@@ -6,7 +6,7 @@ export interface Theme {
   scale: number;
   radius: number;
   opacity: number;
-  positions: { notify: Position; progress: Position; menu: Position; list: Position; textui: Position };
+  positions: { notify: Position; progress: Position; menu: Position; list: Position; textui: Position; timeline: Position };
   radial: { enabled: boolean; key: string };
 }
 
@@ -16,7 +16,7 @@ export const DEFAULT_THEME: Theme = {
   scale: 1,
   radius: 1,
   opacity: 0.96,
-  positions: { notify: 'top-right', progress: 'bottom', menu: 'center-right', list: 'top-left', textui: 'center-left' },
+  positions: { notify: 'top-right', progress: 'bottom', menu: 'center-right', list: 'top-left', textui: 'center-left', timeline: 'center-right' },
   radial: { enabled: false, key: 'Z' },
 };
 
@@ -60,3 +60,6 @@ export interface AlertData { header: string; content: string; cancel: boolean; l
 export interface ProgressData { label: string; duration: number; circle: boolean; canCancel: boolean; position?: Position; started: number }
 export interface TextUIData { text: string; icon?: string; position?: Position; key?: string }
 export interface RadialData { title?: string; back: boolean; items: { label: string; icon?: string; menu: boolean }[] }
+
+export interface TimelineStep { label: string; sub?: string; state: 'done' | 'active' | 'todo'; progress?: number }
+export interface TimelineData { id: string; title: string; subtitle?: string; icon: string; position?: Position; steps: TimelineStep[] }

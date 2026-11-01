@@ -1,10 +1,11 @@
 import { useRef, useState, type CSSProperties } from 'react';
 import { isBrowser, send, useNuiMessage } from './nui';
-import { DEFAULT_THEME, type AlertData, type InputData, type ListData, type MenuData, type NotifyData, type ProgressData, type RadialData, type TextUIData, type Theme } from './types';
+import { DEFAULT_THEME, type AlertData, type InputData, type ListData, type MenuData, type NotifyData, type ProgressData, type RadialData, type TextUIData, type Theme, type TimelineData } from './types';
 import { Alert, Notifications, Progress, TextUI, type NotifyItem } from './parts/Small';
 import { ContextMenu, ListMenu } from './parts/Menus';
 import { InputDialog } from './parts/Input';
 import { Radial } from './parts/Radial';
+import { Timeline } from './parts/Timeline';
 
 /** Dark or light text that reads on top of `hex`. */
 function inkFor(hex: string) {
@@ -25,6 +26,7 @@ export default function App() {
   const [alert, setAlert] = useState<AlertData | null>(null);
   const [text, setText] = useState<TextUIData | null>(null);
   const [radial, setRadial] = useState<RadialData | null>(null);
+  const [timelines, setTimelines] = useState<TimelineData[]>([]);
   const counter = useRef(0);
 
   const dropNote = (key: number) => {
@@ -60,6 +62,12 @@ export default function App() {
       case 'textuiHide': setText(null); break;
       case 'radial': setRadial(data as RadialData); break;
       case 'radialClose': setRadial(null); break;
+      case 'timeline': {
+        const t = data as TimelineData;
+        setTimelines((list) => (list.some((x) => x.id === t.id) ? list.map((x) => (x.id === t.id ? t : x)) : [...list, t]));
+        break;
+      }
+      case 'timelineHide': setTimelines((list) => list.filter((x) => x.id !== (data as { id: string }).id)); break;
     }
   });
 
@@ -79,6 +87,7 @@ export default function App() {
       {progress ? <Progress data={progress} position={theme.positions.progress} /> : null}
       {list ? <ListMenu key={listKey} menu={list} position={theme.positions.list} blocked={modal} /> : null}
       {menu ? <ContextMenu key={menuKey} menu={menu} position={theme.positions.menu} blocked={modal} /> : null}
+      {timelines.length ? <Timeline key={timelines[timelines.length - 1].id} data={timelines[timelines.length - 1]} position={theme.positions.timeline || 'center-right'} /> : null}
       {radial ? <Radial data={radial} /> : null}
       {input ? <InputDialog data={input} onDone={() => setInput(null)} /> : null}
       {alert ? <Alert data={alert} onDone={() => setAlert(null)} /> : null}
@@ -100,6 +109,13 @@ if (isBrowser) {
       send('notify', { title: 'Police', description: 'Someone reported a robbery nearby.', type: 'warning', duration: 60000 });
     }
     if (on('textui')) send('textui', { text: '[E] Open garage' });
+    if (on('timeline')) send('timeline', { id: 'wash', title: 'Pressure washing', subtitle: 'Clean the Legion Square plaza', icon: 'fa-solid fa-spray-can-sparkles', steps: [
+      { label: 'Get in the work truck', sub: 'Mule at the depot', state: 'done' },
+      { label: 'Drive to the site', sub: 'Legion Square · 2.4 km', state: 'done' },
+      { label: 'Clean every dirty spot', sub: '7 of 12 clean', state: 'active', progress: 58 },
+      { label: 'Return the truck', sub: 'Back to the depot', state: 'todo' },
+      { label: 'Get paid', sub: 'Talk to the foreman', state: 'todo' },
+    ] });
     if (on('progress')) send('progress', { label: 'Repairing the engine', duration: 60000, circle: false, canCancel: true });
     if (on('circle')) send('progress', { label: 'Lockpicking', duration: 60000, circle: true, canCancel: true });
     if (on('menu')) send('menu', { id: 'demo', title: 'Pillbox Garage', back: true, canClose: true, options: [

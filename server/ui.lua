@@ -22,7 +22,7 @@ local function clean(t)
         opacity = math.max(0.5, math.min(1, tonumber(t.opacity) or 0.96)),
         positions = {
             notify = p('notify', 'top-right'), progress = p('progress', 'bottom'), menu = p('menu', 'center-right'),
-            list = p('list', 'top-left'), textui = p('textui', 'center-left'),
+            list = p('list', 'top-left'), textui = p('textui', 'center-left'), timeline = p('timeline', 'center-right'),
         },
         radial = { enabled = type(t.radial) == 'table' and t.radial.enabled == true or false, key = type(t.radial) == 'table' and type(t.radial.key) == 'string' and t.radial.key:sub(1, 10) or 'Z' },
     }

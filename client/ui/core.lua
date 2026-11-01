@@ -455,6 +455,60 @@ end
 
 function UI.IsTextUIOpen() return textOpen, textOpen end
 
+-- ============================== TIMELINE ==============================
+-- A task card with steps (jobs, missions): { id, title, subtitle, icon, steps = { { label, sub, state = 'done'|'active'|'todo', progress = 0-100 } } }
+
+local timelines = {}
+
+local function cleanStep(s)
+    s = type(s) == 'table' and s or {}
+    local state = (s.state == 'done' or s.state == 'active') and s.state or 'todo'
+    return { label = tostring(s.label or ''), sub = s.sub and tostring(s.sub) or nil, state = state, progress = tonumber(s.progress) }
+end
+
+function UI.ShowTimeline(data)
+    if type(data) ~= 'table' then return end
+    local id = tostring(data.id or 'default')
+    local steps = {}
+    for i, s in ipairs(type(data.steps) == 'table' and data.steps or {}) do steps[i] = cleanStep(s) end
+    timelines[id] = { id = id, title = tostring(data.title or ''), subtitle = data.subtitle and tostring(data.subtitle) or nil, icon = iconName(data.icon) or 'fa-solid fa-list-check', position = data.position, steps = steps }
+    send('timeline', timelines[id])
+end
+
+--- change the title / subtitle / steps of a shown timeline (only the given fields)
+function UI.UpdateTimeline(id, patch)
+    local t = timelines[tostring(id)]
+    if not t or type(patch) ~= 'table' then return end
+    if patch.title then t.title = tostring(patch.title) end
+    if patch.subtitle ~= nil then t.subtitle = patch.subtitle and tostring(patch.subtitle) or nil end
+    if type(patch.steps) == 'table' then
+        t.steps = {}
+        for i, s in ipairs(patch.steps) do t.steps[i] = cleanStep(s) end
+    end
+    send('timeline', t)
+end
+
+--- one step: a state string ('done' | 'active' | 'todo') or a table { label, sub, state, progress }
+function UI.SetTimelineStep(id, index, step)
+    local t = timelines[tostring(id)]
+    index = tonumber(index)
+    if not t or not index or not t.steps[index] then return end
+    local cur = t.steps[index]
+    if type(step) == 'string' then cur.state = cleanStep({ state = step }).state
+    elseif type(step) == 'table' then
+        t.steps[index] = cleanStep({ label = step.label or cur.label, sub = step.sub == nil and cur.sub or step.sub, state = step.state or cur.state, progress = step.progress == nil and cur.progress or step.progress })
+    end
+    send('timeline', t)
+end
+
+function UI.HideTimeline(id)
+    id = tostring(id or 'default')
+    timelines[id] = nil
+    send('timelineHide', { id = id })
+end
+
+function UI.IsTimelineOpen(id) return timelines[tostring(id or 'default')] ~= nil end
+
 -- ============================== RADIAL ==============================
 -- Off unless web/ui.json → radial.enabled (most servers already run a radial resource).
 
@@ -556,6 +610,7 @@ local E = {
     AlertDialog = UI.AlertDialogAsync, CloseAlertDialog = UI.CloseAlertDialog,
     ProgressBar = UI.ProgressBarAsync, ProgressCircle = UI.ProgressCircleAsync, ProgressActive = UI.ProgressActive, CancelProgress = UI.CancelProgress,
     ShowTextUI = UI.ShowTextUI, HideTextUI = UI.HideTextUI, IsTextUIOpen = UI.IsTextUIOpen,
+    ShowTimeline = UI.ShowTimeline, UpdateTimeline = UI.UpdateTimeline, SetTimelineStep = UI.SetTimelineStep, HideTimeline = UI.HideTimeline, IsTimelineOpen = UI.IsTimelineOpen,
     AddRadialItem = UI.AddRadialItem, RemoveRadialItem = UI.RemoveRadialItem, ClearRadialItems = UI.ClearRadialItems, RegisterRadial = UI.RegisterRadial,
     ShowRadial = UI.ShowRadial, HideRadial = UI.HideRadial, DisableRadial = UI.DisableRadial, GetCurrentRadialId = UI.GetCurrentRadialId,
 }

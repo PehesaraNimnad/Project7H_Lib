@@ -9,7 +9,11 @@
     "progress": "bottom",
     "menu": "center-right",
     "list": "top-left",
-    "textui": "center-left"
+    "textui": "center-left",
+    "timeline": "center-right"
   },
-  "radial": { "enabled": false, "key": "Z" }
+  "radial": {
+    "enabled": false,
+    "key": "Z"
+  }
 }

@@ -217,6 +217,8 @@ Notify, progress bar / circle, context menu, list menu, input + confirm dialogs,
 | `P7H.UI.InputDialog(heading, rows, { allowCancel })` | values or `nil` (waits). Rows: `input, number, checkbox, select, multi-select, slider, textarea, color, date` |
 | `P7H.UI.AlertDialog({ header, content, cancel, labels })` | `'confirm'` / `'cancel'` (waits) |
 | `P7H.UI.ShowTextUI(text, { icon, position, key })` / `HideTextUI()` / `IsTextUIOpen()` | `'[E] Open garage'` shows E as a key |
+| `P7H.UI.ShowTimeline({ id, title, subtitle, icon, position?, steps = { { label, sub?, state = 'done'\|'active'\|'todo', progress? } } })` | task card for jobs / missions (position from `ui.json` → `timeline`) |
+| `P7H.UI.SetTimelineStep(id, index, 'done' or { label, sub, state, progress })` / `UpdateTimeline(id, { title, subtitle, steps })` / `HideTimeline(id)` / `IsTimelineOpen(id)` | change one step / the card, remove it |
 | `P7H.UI.AddRadialItem(items)` / `RemoveRadialItem(id)` / `RegisterRadial({ id, label, items })` / `ShowRadial()` / `HideRadial()` / `DisableRadial(state)` | radial key only when `ui.json` → `radial.enabled` |
 
 Exports of `Project7H_Lib` with the same names (client); `InputDialog`, `AlertDialog`, `ProgressBar`, `ProgressCircle` take a callback as the last argument. Server: `P7H.UI.Notify(src, data)` / `exports.Project7H_Lib:Notify(src, data)`.
