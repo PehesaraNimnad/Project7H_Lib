@@ -4,7 +4,7 @@ game 'gta5'
 author 'Project7H'
 lua54 'yes'
 description 'Project7H shared library: framework, inventory, notify, target, text UI, progress, fuel, keys, appearance, weather, spawn, housing + own UI kit (notify, progress, menus, dialogs, text UI, radial)'
-version '1.0.0'
+version '1.1.0'
 
 client_scripts {
     'client/main.lua',
